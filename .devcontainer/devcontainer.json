@@ -1,6 +1,6 @@
 {
   "image": "rafaelcorsi/bits",
-  "postCreateCommand": "pip3 install --user -r requirements-docker.txt"
+  "postCreateCommand": "pip3 install --user -r requirements-docker.txt",
 
   "customizations": {
 		// Configure properties specific to VS Code.
@@ -11,5 +11,4 @@
       "hediet.vscode-drawio"],
 		}
   }
-
 }
