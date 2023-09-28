@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from myhdl import *
-from ula_modules import *
-import sys
-
-sys.path.insert(0, "../1-comb/")
-from comb_modules import bin2hex
+from seq_modules import *
 
 
 @block
-def toplevel(LEDR, SW, KEY, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5):
-    sw = [SW(i) for i in range(10)]
-    key = [KEY(i) for i in range(10)]
-    ledr_s = [Signal(bool()) for i in range(10)]
-    ledr_bin = ConcatSignal(*reversed(ledr_s))
+def toplevel(LEDR, SW, KEY, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, CLOCK_50, RESET_N):
+    sw_s = [SW(i) for i in range(10)]
+    key_s = [KEY(i) for i in range(10)]
+    ledr_s = [Signal(bool(0)) for i in range(10)]
 
-    # --=======================================--
-    # INSTANCE
-    # --=======================================--
-    ic1 = adder(sw[0:4], sw[6:10], ledr_s[0:4], ledr_s[9])
-    ic2 = bin2hex(HEX0, ledr_bin)
+    # ---------------------------------------- #
+    # seq
+    # ---------------------------------------- #
+    ic0 = dff(ledr_s[0], sw_s[0], key_s[0], RESET_N)
+
+    # ----- Comentar o always_comb ------------#
+    # ic1 = contador(LEDR, key_s[0], RESET_N)
+
+    # ----- Usar o always_comb ----------------#
+    # ic2 = blinkLed(ledr_s[0], CLOCK_50, RESET_N)
+    # ic3 = blinkLed(ledr_s[1], 50, CLOCK_50, RESET_N)
+    # ic4 = blinkLed(ledr_s[2], 1000, CLOCK_50, RESET_N)
+
+    # ----- Comentar o always_comb ------------#
+    # ic5 = barLed(LEDR, CLOCK_50, RESET_N)
+    # ic6 = barLed2(LEDR, CLOCK_50, RESET_N)
+    # ---------------------------------------- #
 
     @always_comb
     def comb():
@@ -38,5 +45,8 @@ HEX2 = Signal(intbv(1)[7:])
 HEX3 = Signal(intbv(1)[7:])
 HEX4 = Signal(intbv(1)[7:])
 HEX5 = Signal(intbv(1)[7:])
-top = toplevel(LEDR, SW, KEY, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5)
+CLOCK_50 = Signal(bool())
+RESET_N = ResetSignal(0, active=0, isasync=True)
+
+top = toplevel(LEDR, SW, KEY, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, CLOCK_50, RESET_N)
 top.convert(hdl="verilog")
