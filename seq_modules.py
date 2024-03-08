@@ -37,7 +37,7 @@ def contador(leds, clk, rst):
 
     @always_seq(clk.posedge, reset=rst)
     def seq():
-        tmp = tmp + 1
+        tmp.next = tmp + 1
         leds.next = tmp
 
     return instances()
